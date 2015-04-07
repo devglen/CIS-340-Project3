@@ -4,7 +4,7 @@ CFLAGS = -Wall -g -I.
 all: main help showsector showfat traverse structure
 
 main: 
-	$(CC) $(CFLAGS) -c main.c -o main
+	$(CC) $(CFLAGS) main.c -o main
 
 help: 
 	$(CC) $(CFLAGS) help.c -o help
