@@ -1,17 +1,25 @@
 CC = gcc
-CFLAGS = -std=gnu99 -Wall -g -I.
-DEPS = flop.h
-OBJ = main.c flop.c
+CFLAGS = -Wall -g -I.
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+all: main help showsector showfat traverse structure
 
-main: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+main: 
+	$(CC) $(CFLAGS) -c main.c -o main
 
-run:
-	./main
+help: 
+	$(CC) $(CFLAGS) help.c -o help
 
-.PHONY: clean
+showsector: 
+	$(CC) $(CFLAGS) showsector.c -o showsector
+
+showfat: 
+	$(CC) $(CFLAGS) showfat.c -o showfat
+
+traverse: 
+	$(CC) $(CFLAGS) traverse.c -o traverse
+
+structure: 
+	$(CC) $(CFLAGS) structure.c -o structure
+
 clean:
-	rm -f *.o *~ main
+	$(RM) *.o main help showsector showfat traverse structure
