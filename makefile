@@ -1,7 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -g -c
+EXECS = main help showfat showsector structure traverse
 
-all: main help showfat showsector structure traverse
+all: $(EXECS)
 
 main: main.o
 	$(CC) main.o -o main
