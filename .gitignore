@@ -1,3 +1,8 @@
 main
+help
+showfat
+showsector
+traverse
+structure
 flop.o
 main.o
