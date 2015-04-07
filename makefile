@@ -1,25 +1,43 @@
 CC = gcc
-CFLAGS = -Wall -g -I.
+CFLAGS = -Wall -g -c
 
-all: main help showsector showfat traverse structure
+all: main help showfat showsector structure traverse
 
-main: 
-	$(CC) $(CFLAGS) main.c -o main
+main: main.o
+	$(CC) main.o -o main
 
-help: 
-	$(CC) $(CFLAGS) help.c -o help
+main.o: main.c
+	$(CC) $(CFLAGS) main.c
 
-showsector: 
-	$(CC) $(CFLAGS) showsector.c -o showsector
+help: help.o
+	$(CC) help.o -o help
 
-showfat: 
-	$(CC) $(CFLAGS) showfat.c -o showfat
+help.o: help.c
+	$(CC) $(CFLAGS) help.c
 
-traverse: 
-	$(CC) $(CFLAGS) traverse.c -o traverse
+showfat: showfat.o
+	$(CC) showfat.o -o showfat
 
-structure: 
-	$(CC) $(CFLAGS) structure.c -o structure
+showfat.o: showfat.c
+	$(CC) $(CFLAGS) showfat.c
+
+showsector: showsector.o
+	$(CC) showsector.o -o showsector
+
+showsector.o: showsector.c
+	$(CC) $(CFLAGS) showsector.c
+
+structure: structure.o
+	$(CC) structure.o -o structure
+
+structure.o: structure.c
+	$(CC) $(CFLAGS) structure.c
+
+traverse: traverse.o
+	$(CC) traverse.o -o traverse
+
+traverse.o: traverse.c
+	$(CC) $(CFLAGS) traverse.c
 
 clean:
-	$(RM) *.o main help showsector showfat traverse structure
+	$(RM) *.o $(EXECS)
