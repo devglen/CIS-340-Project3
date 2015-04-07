@@ -18,32 +18,32 @@ int main(void)
         fgets(input, 50, stdin); //read line
         sscanf(input, "%s", command); //separate out first arg, consider using strtok() instead of sscanf()
 
-        if (strcmp("quit", command) == 0) {
-            printf("\n Exiting the floppy disk shell... \n");
+        if (strcmp("exit", command) == 0) {
+            printf("Exiting the floppy disk shell... \n");
             return EXIT_SUCCESS;
         } else if (strcmp("help", command) == 0) {
-            help();
+            execve("./help","","");
         } else if (strcmp("fmount", command) == 0) {
             sscanf(input, "%s %s", command, arg);
             fmount((const char*) arg);
         } else if (strcmp("fumount", command) == 0) {
             fumount(fd);
         } else if (strcmp("structure", command) == 0) {
-            structure();
+            execve("./structure");
         } else if (strcmp("traverse", command) == 0) {
             if (strstr(input, "-l") == NULL) {
-                traverse(command);
+                execve("./traverse", command);
             } else if (strstr(input, "-l") != NULL) {
                 sscanf(input, "%s %s", command, arg);
-                traverse(arg);
+                execve("./traverse", arg);
             } else {
                 printf("Error invalid argument, please try again! \n");
             }
         } else if (strcmp("showsector", command) == 0) {
             sscanf(input, "%s %s", command, arg);
-            show_sector(atoi(arg));
+            execve("./show_sector",atoi(arg));
         } else if (strcmp("showfat", command) == 0) {
-            show_fat();
+            execve("./show_fat");
         } else {
             printf("Error: invalid command\n");
         }
