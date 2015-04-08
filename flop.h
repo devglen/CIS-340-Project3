@@ -11,6 +11,7 @@ unsigned short num_of_root_dir;
 unsigned short sectors_per_fat;
 unsigned short cluster;
 char *fat_buffer;
+char *path_name;
 
 void append(char* s, char c);
 void path();

@@ -10,9 +10,6 @@
 #include <ctype.h>
 #include "flop.h"
 
-
-char pathname[] = "";
-
 void append(char* s, char c)
 {
     int len = strlen(s);
@@ -265,6 +262,7 @@ void traverse(char* flag)
 {
     unsigned short sectors, root_bytes, file_bytes, new_clust;
     char buf[32], directory[256], file[9], extension[4];
+    int i;
 
     if ((lseek(fd, SEEK_SET, SEEK_SET)) != 0) {
         printf("There was a problem setting pointer to beginning of file\n");
@@ -293,7 +291,7 @@ void traverse(char* flag)
         printf(" *****************************\n\n");
     }
 
-    for (int i = 0;i < num_of_root_dir; i++) {
+    for (i = 0;i < num_of_root_dir; i++) {
         // go to root entry
         if ((lseek(fd, root_bytes * bytes_per_sector + i * 32, 0))
                 != root_bytes * bytes_per_sector + i * 32) {
@@ -357,14 +355,15 @@ void show_sector(int sec)
 
 void show_fat()
 {
+    int i, x;
     // set up horizontal entry hex values
     printf("\n");
-    for (int i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++) {
         printf("\t %x", i);
     }
 
     printf("\n \t \t"); // first two entries are reserved
-    for (int x = 2; x < fat_bytes*2/3; x++) {
+    for (x = 2; x < fat_bytes*2/3; x++) {
         unsigned short low, high;
         unsigned short temp = (unsigned short) x;
         // print the vertical hex entry values
