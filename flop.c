@@ -60,6 +60,11 @@ void path_sub(char* str)
     }
 }
 
+void change_dir(const char *path)
+{
+    chdir(path);
+}
+
 void fmount(const char* filename)
 {
     if ((fd = open(filename, O_RDONLY)) >= 0) {

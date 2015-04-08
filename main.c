@@ -28,14 +28,14 @@ int main(void)
                 path();
             } else if (!strcmp("+", arg)) {
                 if(strchr(mod,'#') == NULL){
-                    path_add((const char*)mod);
+                    path_add(mod);
                     strcpy(arg,"");
                 } else {
                     printf("Error invalid argument, please try again! \n");
                 }
             } else if (!strcmp("-", arg)) {
                 if(strchr(mod,'#') == NULL){
-                    path_sub((const char*)mod);
+                    path_sub(mod);
                     strcpy(arg,"");
                 } else{
                     printf("Error invalid argument, please try again! \n");
@@ -43,6 +43,9 @@ int main(void)
             } else {
                 printf("Error invalid argument, please try again! \n");
             }
+        } else if (!strcmp("cd", command)) {
+            sscanf("%s %s", command, arg);   
+            change_dir((const char*)arg);
         } else if (!strcmp("help", command)) {
             execve("./help", args, env);
         } else if (!strcmp("fmount", command)) {

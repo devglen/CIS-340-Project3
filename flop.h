@@ -17,6 +17,7 @@ void append(char* s, char c);
 void path();
 void path_add(char *str);
 void path_sub(char *str);
+void change_dir(const char *path);
 void setup_variables();
 void fmount(const char *);
 void fumount();
