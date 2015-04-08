@@ -23,29 +23,27 @@ int main(void)
             printf("Exiting the floppy disk shell... \n");
             return EXIT_SUCCESS;
         } else if (!strcmp("path", command)) {
-		    sscanf(input, "%s %s %s", command, arg, mod);
-	  	    if ((strchr(arg,'+') == NULL) && (strchr(arg,'-') == NULL)) {
+            sscanf(input, "%s %s %s", command, arg, mod);
+            if ((strchr(arg,'+') == NULL) && (strchr(arg,'-') == NULL)) {
                 path();
             } else if (!strcmp("+", arg)) {
-		        if(strchr(mod,'#') == NULL){
-                    pathadd((const char*)mod);
-		            strcpy(arg,"");
-		        }
-	        	else{
-		            printf("Error invalid argument, please try again! \n");
+                if(strchr(mod,'#') == NULL){
+                    path_add((const char*)mod);
+                    strcpy(arg,"");
+                } else {
+                    printf("Error invalid argument, please try again! \n");
                 }
-            }else if (!strcmp("-", arg)) {
-		        if(strchr(mod,'#') == NULL){
-                    pathsub((const char*)mod);
-		            strcpy(arg,"");
-		        }
-		    else{
-		        printf("Error invalid argument, please try again! \n");
+            } else if (!strcmp("-", arg)) {
+                if(strchr(mod,'#') == NULL){
+                    path_sub((const char*)mod);
+                    strcpy(arg,"");
+                } else{
+                    printf("Error invalid argument, please try again! \n");
+                }
+            } else {
+                printf("Error invalid argument, please try again! \n");
             }
-        } else{
-		    printf("Error invalid argument, please try again! \n");
-	    }
-	}else if (!strcmp("help", command)) {
+        } else if (!strcmp("help", command)) {
             execve("./help", args, env);
         } else if (!strcmp("fmount", command)) {
             sscanf(input, "%s %s", command, arg);
