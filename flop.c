@@ -25,57 +25,42 @@ void path()
     printf("path: %s",pathname);
 }
 
-void pathadd(char* str)
+void path_add(char* str)
 {
     char c = ':';
     if(strlen(pathname) == 0){
-    }
-    else{
+    } else {
         append(pathname,c);
     }
     strcat(pathname,str);
     printf("path: %s",pathname);
 }
 
-void pathsub(char* str)
+void path_sub(char* str)
 {
     int i;
     char f[50] = ":";
     char c[50] = "";
-    if(pathname[1] != str[1]){
+    if (pathname[1] != str[1]) {
         strcat(c,f);
         strcat(c,str);
-    }
-    else{
+    } else {
         strcat(c,str);
     }
-    if(strstr(pathname, c) != NULL){
+
+    if (strstr(pathname, c) != NULL) {
         char *search = strstr(pathname,c);
         char *end = search + strlen(c);
         char beginning[60] = "";
-        for(i=0;i<((strlen(pathname) - (strlen(c) + strlen(end))));i++){
+        for (i=0; i<((strlen(pathname) - (strlen(c) + strlen(end)))); i++){
             beginning[i] = pathname[i];
         }
         strcat(beginning,end);
         strcpy(pathname,beginning);
         printf("path: %s",pathname);
-    }
-    else{
+    } else {
         printf("\nstring not found in path!");
     }
-}
-
-void help(void)
-{
-    printf("The available commands are:\n");
-    printf("    help                    - display a list of available commands.\n");
-    printf("    fmount <file_name>      - mount the specified image file\n");
-    printf("    fumount                 - umount the mounted floppy disk. \n");
-    printf("    structure               - list the structure of the floppy disk image.\n");
-    printf("    traverse [-l]           - list the contents in the root directory. Optional -l flag gives a long listing of the root directory.\n");
-    printf("    showsector <sector_num> - show the content of the given sector.\n");
-    printf("    showfat                 - show the content of the FAT table.\n");
-    printf("    quit                    - quit the floppy shell \n");
 }
 
 void fmount(const char* filename)

@@ -12,8 +12,11 @@ unsigned short sectors_per_fat;
 unsigned short cluster;
 char *fat_buffer;
 
+void append(char* s, char c);
+void path();
+void path_add(char *str);
+void path_sub(char *str);
 void setup_variables();
-void help(void);
 void fmount(const char *);
 void fumount();
 void structure();
