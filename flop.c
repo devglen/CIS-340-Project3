@@ -10,6 +10,61 @@
 #include <ctype.h>
 #include "flop.h"
 
+
+char pathname[] = "";
+
+void append(char* s, char c)
+{
+    int len = strlen(s);
+    s[len] = c;
+    s[len+1] = '\0';
+}
+
+void path()
+{
+    printf("path: %s",pathname);
+}
+
+void pathadd(char* str)
+{
+    char c = ':';
+    if(strlen(pathname) == 0){
+    }
+    else{
+        append(pathname,c);
+    }
+    strcat(pathname,str);
+    printf("path: %s",pathname);
+}
+
+void pathsub(char* str)
+{
+    int i;
+    char f[50] = ":";
+    char c[50] = "";
+    if(pathname[1] != str[1]){
+        strcat(c,f);
+        strcat(c,str);
+    }
+    else{
+        strcat(c,str);
+    }
+    if(strstr(pathname, c) != NULL){
+        char *search = strstr(pathname,c);
+        char *end = search + strlen(c);
+        char beginning[60] = "";
+        for(i=0;i<((strlen(pathname) - (strlen(c) + strlen(end))));i++){
+            beginning[i] = pathname[i];
+        }
+        strcat(beginning,end);
+        strcpy(pathname,beginning);
+        printf("path: %s",pathname);
+    }
+    else{
+        printf("\nstring not found in path!");
+    }
+}
+
 void help(void)
 {
     printf("The available commands are:\n");
