@@ -4,11 +4,14 @@ EXECS = main help showfat showsector structure traverse
 
 all: $(EXECS)
 
-main: main.o
-	$(CC) main.o -o main
+main: main.o flop.o
+	$(CC) main.o flop.o -o main
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
+
+flop.o: flop.c flop.h
+	$(CC) $(CFLAGS) flop.c
 
 help: help.o
 	$(CC) help.o -o help
