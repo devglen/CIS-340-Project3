@@ -19,18 +19,18 @@ void append(char* s, char c)
 
 void path()
 {
-    printf("path: %s",pathname);
+    fprintf(stdout, "path: %s",path_name);
 }
 
 void path_add(char* str)
 {
     char c = ':';
-    if(strlen(pathname) == 0){
+    if(strlen(path_name) == 0){
     } else {
-        append(pathname,c);
+        append(path_name,c);
     }
-    strcat(pathname,str);
-    printf("path: %s",pathname);
+    strcat(path_name,str);
+    fprintf(stdout, "path: %s",path_name);
 }
 
 void path_sub(char* str)
@@ -38,68 +38,31 @@ void path_sub(char* str)
     int i;
     char f[50] = ":";
     char c[50] = "";
-    if (pathname[1] != str[1]) {
+    if (path_name[1] != str[1]) {
         strcat(c,f);
         strcat(c,str);
     } else {
         strcat(c,str);
     }
 
-    if (strstr(pathname, c) != NULL) {
-        char *search = strstr(pathname,c);
+    if (strstr(path_name, c) != NULL) {
+        char *search = strstr(path_name,c);
         char *end = search + strlen(c);
         char beginning[60] = "";
-        for (i=0; i<((strlen(pathname) - (strlen(c) + strlen(end)))); i++){
-            beginning[i] = pathname[i];
+        for (i=0; i<((strlen(path_name) - (strlen(c) + strlen(end)))); i++){
+            beginning[i] = path_name[i];
         }
         strcat(beginning,end);
-        strcpy(pathname,beginning);
-        printf("path: %s",pathname);
+        strcpy(path_name,beginning);
+        fprintf(stdout, "path: %s",path_name);
     } else {
-        printf("\nstring not found in path!");
+        fprintf(stdout, "\nstring not found in path!");
     }
 }
 
 void change_dir(const char *path)
 {
     chdir(path);
-}
-
-void fmount(const char* filename)
-{
-    if ((fd = open(filename, O_RDONLY)) >= 0) {
-        setup_variables();
-        printf("%s has been mounted. \n", filename);
-    } else {
-        printf("The floppy disk was not mounted, check location and filename and try again.");
-    }
-}
-
-void fumount()
-{
-    if ((close(fd)) < 0) {
-        printf("There was an error un-mounting the floppy disk\n");
-    } else {
-        printf("The floppy was unmounted successfully.\n");
-    }
-}
-
-void structure()
-{
-    int dir_entries_per_sector = 16, count = 0;
-    printf("Structure of the floppy image: \n"); 
-
-    printf("\nnumber of fats: \t%d", num_of_fats);
-    printf("\nsectors used by fat: \t%d", sectors_per_fat);
-    printf("\nsectors per cluster: \t%d", sectors_per_cluster);
-    printf("\nnumber of ROOT Entries: \t%d", num_of_root_dir);
-    printf("\nnumber of bytes per sector: \t%d", bytes_per_sector);
-    printf("\n---Sector #---     ---Sector Types---");
-    printf("\n       %d                  BOOT        ", count);
-    for(count = 0;count<num_of_fats;count++) {
-        printf("\n    %02d -- %02d              FAT%d", (count * sectors_per_fat) + 1,(1 + count)*sectors_per_fat,count + 1);
-    }
-    printf("\n    %d -- %d              ROOT DIRECTORY \n",sectors_per_fat*num_of_fats+1, num_of_root_dir/dir_entries_per_sector + num_of_fats*sectors_per_fat);
 }
 
 void trim(char *str)
@@ -120,7 +83,7 @@ void trim(char *str)
     }
     str[i - begin] = '\0'; // Null terminate string.
 }
-
+/*
 void print_files(char *buf, char *directory, char *flag)
 {
     cluster = (((unsigned short) buf[26]) & 0xff) | (((unsigned short) buf[27]) & 0x0f)<<8;
@@ -151,7 +114,7 @@ void print_files(char *buf, char *directory, char *flag)
         day = date & 0x1f;
         month = date >> 5 & 0xf;
         year = (date >> 9 & 0x7f) + 1980;
-        
+
         if (buf[11] & 0x20) {
             attributes[0] = 'A';
         }
@@ -165,22 +128,22 @@ void print_files(char *buf, char *directory, char *flag)
             attributes[3] = 'S';
         }
 
-        printf("-%-9s", attributes);
-        printf("%2.2d/%2.2d/%4d %2.2d:%2.2d:%-10.2d", month, day, year, hour, minute, second);
+        fprintf(stdout, "-%-9s", attributes);
+        fprintf(stdout, "%2.2d/%2.2d/%4d %2.2d:%2.2d:%-10.2d", month, day, year, hour, minute, second);
         if (buf[11]&0x10) {
-            printf("%-10s     ", "<DIR>");
+            fprintf(stdout, "%-10s     ", "<DIR>");
         } else {
             filesize = (buf[31] & 0xff) << 24 | (buf[30] & 0xff) << 16 | (buf[29] & 0xff) << 8 | (buf[28] & 0xff);
-            printf("%10d     ", filesize);
+            fprintf(stdout, "%10d     ", filesize);
         }
-        printf("%-40s", filename);
-        printf("%10d \n", cluster);
+        fprintf(stdout, "%-40s", filename);
+        fprintf(stdout, "%10d \n", cluster);
     } else {
-        printf("%-40s", filename);
+        fprintf(stdout, "%-40s", filename);
         if (buf[11] & 0x10) {
-            printf("\t%s", "<DIR>");
+            fprintf(stdout, "\t%s", "<DIR>");
         }
-        printf("\n");
+        fprintf(stdout, "\n");
     }
 }
 
@@ -196,12 +159,12 @@ void print_directories(unsigned short cluster, char *directory, unsigned short f
     buf[0] = '$';
     strcpy(single_dir, directory);
     if ((lseek(fd, ptr, 0)) != ptr) {
-        printf("Error setting the file pointer to beginning\n");
+        fprintf(stdout, "Error setting the file pointer to beginning\n");
         exit(1);
     }
 
     if ((read(fd, buf, sizeof(buf))) != sizeof(buf)) {
-        printf("Error reading file entry\n");
+        fprintf(stdout, "Error reading file entry\n");
         exit(1);
     }
 
@@ -221,11 +184,11 @@ void print_directories(unsigned short cluster, char *directory, unsigned short f
                 counter = 0;
                 ptr = (file_bytes + (cluster - 2)*num_of_sectors)*bytes_per_sector;
                 if ((lseek(fd, ptr, SEEK_SET)) != ptr) {
-                    printf("There was a problem moving the pointer \n");
+                    fprintf(stdout, "There was a problem moving the pointer \n");
                     exit(1);
                 }
                 if ((read(fd, buf, sizeof(buf))) != sizeof(buf)) {
-                    printf("Error reading file entry\n");
+                    fprintf(stdout, "Error reading file entry\n");
                     exit(1);
                 }
                 continue;
@@ -252,12 +215,12 @@ void print_directories(unsigned short cluster, char *directory, unsigned short f
                     strcat(single_dir, "/");
                     print_directories(new_cluster, single_dir, file_bytes, num_of_sectors, bytes_per_sector, flag);
                     // reset pointer
-                    lseek(fd, ptr + counter * 32, SEEK_SET); 
+                    lseek(fd, ptr + counter * 32, SEEK_SET);
                 }
             }
         }
         if ((read(fd, buf, sizeof(buf))) != sizeof(buf)) {
-            printf("There was a problem reading the next file/entry\n");
+            fprintf(stdout, "There was a problem reading the next file/entry\n");
             exit(1);
         }
     }
@@ -270,12 +233,12 @@ void traverse(char* flag)
     int i;
 
     if ((lseek(fd, SEEK_SET, SEEK_SET)) != 0) {
-        printf("There was a problem setting pointer to beginning of file\n");
+        fprintf(stdout, "There was a problem setting pointer to beginning of file\n");
         exit(1);
     }
 
     if ((read(fd, buf, sizeof(buf)) != sizeof(buf))) {
-        printf("Error reading from floppy disk, try again.\n");
+        fprintf(stdout, "Error reading from floppy disk, try again.\n");
         exit(1);
     }
 
@@ -286,26 +249,26 @@ void traverse(char* flag)
     strcpy(directory, "/");
 
     if (strcmp("-l", flag) == 0) {
-        printf(" *****************************\n");
-        printf(" ** FILE ATTRIBUTE NOTATION **\n");
-        printf(" ** **\n");
-        printf(" ** R ------ READ ONLY FILE **\n");
-        printf(" ** S ------ SYSTEM FILE **\n");
-        printf(" ** H ------ HIDDEN FILE **\n");
-        printf(" ** A ------ ARCHIVE FILE **\n");
-        printf(" *****************************\n\n");
+        fprintf(stdout, " *****************************\n");
+        fprintf(stdout, " ** FILE ATTRIBUTE NOTATION **\n");
+        fprintf(stdout, " ** **\n");
+        fprintf(stdout, " ** R ------ READ ONLY FILE **\n");
+        fprintf(stdout, " ** S ------ SYSTEM FILE **\n");
+        fprintf(stdout, " ** H ------ HIDDEN FILE **\n");
+        fprintf(stdout, " ** A ------ ARCHIVE FILE **\n");
+        fprintf(stdout, " *****************************\n\n");
     }
 
     for (i = 0;i < num_of_root_dir; i++) {
         // go to root entry
         if ((lseek(fd, root_bytes * bytes_per_sector + i * 32, 0))
                 != root_bytes * bytes_per_sector + i * 32) {
-            printf("There was an error reading entries in floppy \n");
+            fprintf(stdout, "There was an error reading entries in floppy \n");
             exit(1);
         }
 
         if ((read(fd, buf, sizeof(buf))) != sizeof(buf)) {
-            printf("There was an error reading directory \n");
+            fprintf(stdout, "There was an error reading directory \n");
             exit(1);
         }
 
@@ -335,88 +298,50 @@ void traverse(char* flag)
         }
     }
 }
+*/
+int parse_cmd(char *cmd, char *arg[]) {
+	int a = 0, b = 0, c = 0;
 
-
-void show_sector(int sec) 
-{
-    int i;
-    unsigned char hex[bytes_per_sector];
-    printf("\nhex dump of sector : %d", sec);
-
-    // set up horizontal entry hex values
-    printf("\n");
-    printf("\t 0 \t 1 \t 2 \t 3 \t 4 \t 5 \t 6 \t 7 \t 8 \t 9 \t A \t B \t C \t D \t E \t F");
-
-    lseek(fd,sec*bytes_per_sector,SEEK_SET);
-    for(i=0;i<bytes_per_sector;i++) {
-        read(fd,&hex[i],1);
-        if(i % 16 == 0){
-            printf("\n %x ",i);
-        }
-        printf("\t %x ", hex[i]);
-    }
-    printf("\n");
+	while (cmd[a] != '\n') {
+		if (cmd[a] != ' ') {
+			arg[c][b] = cmd[a];
+			b++;
+		} else {
+			if (b) {
+				arg[c][b] = '\0';
+				c++;
+				b = 0;
+			}
+		}
+		a++;
+	}
+	arg[c][b] = '\0';
+	arg[c+1] = NULL;
+	if (b | c) {
+		return c+1;
+	}
+	else
+		return c;
 }
 
-void show_fat()
-{
-    int i, x;
-    // set up horizontal entry hex values
-    printf("\n");
-    for (i = 0; i < 16; i++) {
-        printf("\t %x", i);
-    }
-
-    printf("\n \t \t"); // first two entries are reserved
-    for (x = 2; x < fat_bytes*2/3; x++) {
-        unsigned short low, high;
-        unsigned short temp = (unsigned short) x;
-        // print the vertical hex entry values
-        if ((x%16) == 0) {
-            printf("\n %x", x);
-        }
-
-        if (temp%2) {
-            low = (((unsigned short) fat_buffer[(3*temp - 1)/2])>>4) & 0x000f;
-            high = (((unsigned short) fat_buffer[(3*temp + 1)/2])<<4) & 0x0ff0;
-        } else {
-            low = ((unsigned short) fat_buffer[3*temp/2]) & 0x00ff;
-            high = (((unsigned short) fat_buffer[(3*temp + 2)/2])<<8) & 0x0f00;
-        }
-        cluster = low | high;
-
-        if (cluster) {
-            printf("\t %x", cluster);
-        } else {
-            printf("\t FREE");
-        }
-    }
-
-    printf("\n");
+int is_pipe(char **command) {
+	char **cmd = command;
+	while (*cmd != NULL) {
+		if (!strcmp(*cmd, "|")) {
+			return 1;
+		}
+		cmd++;
+	}
+	return 0;
 }
 
-void setup_variables()
-{
-    lseek(fd,11,SEEK_SET); //skip ignored bytes
-    read(fd, &bytes_per_sector, 2);
-    read(fd, &sectors_per_cluster, 1);
-    lseek(fd,2,SEEK_CUR); //skip reserved sectors
-    read(fd, &num_of_fats, 1);
-    read(fd, &num_of_root_dir, 2);
-    read(fd, &num_of_sectors, 2);
-    lseek(fd,1,SEEK_CUR); //skip ignored byte
-    read(fd, &sectors_per_fat,2);
-    
-    fat_bytes = bytes_per_sector * sectors_per_fat;
-    
-    fat_buffer = (char *) malloc(fat_bytes);
-    if (lseek(fd, bytes_per_sector, 0) != bytes_per_sector) {
-        printf("There was an issue setting the cursor");
-        exit(1);
-    }
-
-    if ((read(fd, fat_buffer, fat_bytes)) != fat_bytes) {
-        printf("There was an issue reading the sector");
-        exit(1);
-    }
+int is_redirection(char **command) {
+	char **cmd = command;
+	while (*cmd != NULL) {
+		if (!strcmp(*cmd, ">")) {
+			return 1;
+		}
+		cmd++;
+	}
+	return 0;
 }
