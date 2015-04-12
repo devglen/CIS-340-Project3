@@ -9,69 +9,81 @@
 #include <sys/wait.h>
 #include "flop.h"
 
-int main(void)
+int main()
 {
+	int i, redirect_bool; // pipe_bool
+	int pid;
+	char **cmd;
+	char buf[512];
+	int command_bytes;
+
     while (1) {
-        printf("\nflop: ");
-        char input[50], command[50], arg[50], mod[50];
-        char *const args[10], *const env[10];
+        fprintf(stdout, "\nflop: ");
+	fflush(stdout);
 
-        fgets(input, 50, stdin); //read line
-        sscanf(input, "%s", command); //separate out first arg, consider using strtok() instead of sscanf()
+        cmd = (char **)malloc(20*sizeof(char *));
+		for (i = 0; i < 20; i++)
+			cmd[i] = (char *) malloc(128);
 
-        if (!strcmp("exit", command)) {
-            printf("Exiting the floppy disk shell... \n");
-            return EXIT_SUCCESS;
-        } else if (!strcmp("path", command)) {
-            sscanf(input, "%s %s %s", command, arg, mod);
-            if ((strchr(arg,'+') == NULL) && (strchr(arg,'-') == NULL)) {
-                path();
-            } else if (!strcmp("+", arg)) {
-                if(strchr(mod,'#') == NULL){
-                    path_add(mod);
-                    strcpy(arg,"");
-                } else {
-                    printf("Error invalid argument, please try again! \n");
-                }
-            } else if (!strcmp("-", arg)) {
-                if(strchr(mod,'#') == NULL){
-                    path_sub(mod);
-                    strcpy(arg,"");
-                } else{
-                    printf("Error invalid argument, please try again! \n");
-                }
-            } else {
-                printf("Error invalid argument, please try again! \n");
-            }
-        } else if (!strcmp("cd", command)) {
-            sscanf("%s %s", command, arg);   
-            change_dir((const char*)arg);
-        } else if (!strcmp("help", command)) {
-            execve("./help", args, env);
-        } else if (!strcmp("fmount", command)) {
-            sscanf(input, "%s %s", command, arg);
-            //fmount((const char*) arg);
-        } else if (!strcmp("fumount", command)) {
-            //fumount(fd);
-        } else if (!strcmp("structure", command)) {
-            execve("./structure", args, env);
-        } else if (!strcmp("traverse", command)) {
-            if (strstr(input, "-l") == NULL) {
-                execve("./traverse", args, env);
-            } else if (strstr(input, "-l") != NULL) {
-                sscanf(input, "%s %s", command, arg);
-                execve("./traverse", args, env);
-            } else {
-                printf("Error invalid argument, please try again! \n");
-            }
-        } else if (!strcmp("showsector", command)) {
-            sscanf(input, "%s %s", command, arg);
-            execve("./show_sector", args, env);
-        } else if (!strcmp("showfat", command)) {
-            execve("./show_fat", args, env);
-        } else {
-            printf("Error: invalid command\n");
-        }
+		if ((command_bytes = read(0, buf, 512)) < 0) {
+                        fprintf(stdout, "There was an issue reading the command, please try again.\n");
+			continue;
+		}
+
+		buf[command_bytes] = '\0';	/* give a terminate sign for the command */
+		if (parse_cmd(buf, cmd)) {
+			if (strcmp("exit", cmd[0]) == 0) {
+				fprintf(stdout, "Exiting the floppy disk shell... \n");
+				return EXIT_SUCCESS;
+			}
+
+			if (!strcmp("path", cmd[0])) {
+				if ((strchr(cmd[1],'+') == NULL) && (strchr(cmd[1],'-') == NULL)) {
+					path();
+					continue;
+				} else if (!strcmp("+", cmd[1])) {
+					if(strchr(cmd[2],'#') == NULL){
+						path_add(cmd[2]);
+						strcpy(cmd[1],"");
+						continue;
+					} else {
+						fprintf(stdout, "Error invalid argument, please try again! \n");
+						continue;
+					}
+				} else if (!strcmp("-", cmd[1])) {
+					if(strchr(cmd[2],'#') == NULL){
+						path_sub(cmd[2]);
+						strcpy(cmd[1],"");
+						continue;
+					} else{
+						fprintf(stdout, "Error invalid argument, please try again! \n");
+					}
+				} else {
+					fprintf(stdout, "Error invalid argument, please try again! \n");
+				}
+			} else if (!strcmp("cd", cmd[0])) {
+				change_dir((const char*)cmd[1]);
+				continue;
+			}
+
+			if (is_pipe(cmd)) {
+				// TODO: add logic for pipe
+				fprintf(stdout, "Adding logic soon\n");
+			}
+			else {
+				if ((redirect_bool = is_redirection(cmd)) > 0) {
+					// TODO: add logic for redirect
+					fprintf(stdout, "Adding logic soon.\n");
+				}
+				if ((pid =fork()) == 0) {
+					execve(cmd[0], cmd, NULL);
+					fprintf(stdout, "shell command is invalid, plesae try again.\n");
+					continue;
+				}
+				wait(NULL);
+			}
+			free(cmd);
+		}
     }
 
     return 0;
