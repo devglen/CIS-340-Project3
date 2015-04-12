@@ -18,6 +18,8 @@ int main()
 	int command_bytes;
 
     while (1) {
+        char arg[50], mod[50];
+        
         fprintf(stdout, "\nflop: ");
 	fflush(stdout);
 
@@ -30,30 +32,42 @@ int main()
 			continue;
 		}
 
-		buf[command_bytes] = '\0';	/* give a terminate sign for the command */
+		buf[command_bytes] = '\0';
 		if (parse_cmd(buf, cmd)) {
 			if (strcmp("exit", cmd[0]) == 0) {
 				fprintf(stdout, "Exiting the floppy disk shell... \n");
 				return EXIT_SUCCESS;
 			}
 
-			if (!strcmp("path", cmd[0])) {
-				if ((strchr(cmd[1],'+') == NULL) && (strchr(cmd[1],'-') == NULL)) {
+			if (strcmp("path", cmd[0]) == 0) {
+                                if (cmd[1]) {
+                                    strcpy(arg,cmd[1]);
+                                }
+                                else {
+                                    strcpy(arg, "");
+                                }
+                                if (cmd[2]) {
+                                    strcpy(mod,cmd[2]);
+                                }
+                                else {
+                                    strcpy(mod, "");
+                                }
+				if ((strchr(arg,'+') == NULL) && (strchr(arg,'-') == NULL)) {
 					path();
 					continue;
-				} else if (!strcmp("+", cmd[1])) {
-					if(strchr(cmd[2],'#') == NULL){
-						path_add(cmd[2]);
-						strcpy(cmd[1],"");
+				} else if (!strcmp("+", arg)) {
+					if(strchr(mod,'#') == NULL){
+						path_add(mod);
+						strcpy(arg,"");
 						continue;
 					} else {
 						fprintf(stdout, "Error invalid argument, please try again! \n");
 						continue;
 					}
-				} else if (!strcmp("-", cmd[1])) {
-					if(strchr(cmd[2],'#') == NULL){
-						path_sub(cmd[2]);
-						strcpy(cmd[1],"");
+				} else if (!strcmp("-", arg)) {
+					if(strchr(mod,'#') == NULL){
+						path_sub(mod);
+						strcpy(arg,"");
 						continue;
 					} else{
 						fprintf(stdout, "Error invalid argument, please try again! \n");
