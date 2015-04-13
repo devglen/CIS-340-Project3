@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -c
+CFLAGS = -std=gnu99 -Wall -g -c
 EXECS = main help showfat showsector structure traverse
 
 all: $(EXECS)
