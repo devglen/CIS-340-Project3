@@ -19,11 +19,18 @@ void append(char* s, char c)
 
 void path()
 {
+    if(path_name == NULL){ 
+       path_name = (char *) malloc(20); 
+    }
+
     fprintf(stdout, "path: %s",path_name);
 }
 
 void path_add(char* str)
 {
+    if(path_name == NULL){ 
+       path_name = (char *) malloc(20); 
+    }	
     char c = ':';
     if(strlen(path_name) == 0){
     } else {
@@ -35,6 +42,9 @@ void path_add(char* str)
 
 void path_sub(char* str)
 {
+    if(path_name == NULL){ 
+       path_name = (char *) malloc(20); 
+    }
     int i;
     char f[50] = ":";
     char c[50] = "";
