@@ -101,5 +101,6 @@ int main() {
 
 	fprintf(stdout, "\n");
 	free(fat_buffer);
+	close(fd);
 	return 0;
 }
