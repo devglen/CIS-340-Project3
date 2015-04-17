@@ -135,7 +135,7 @@ int main()
 					// TODO: add logic for redirect
 					cmmnd = cmd;
 					while (*cmmnd != NULL) {
-						if (!strcmp(*cmd, ">")) {
+						if (!strcmp(*cmmnd, ">")) {
 							if ((fd_rdr = open(*(cmmnd+1), (O_WRONLY | O_CREAT | O_TRUNC), 0644)) < 0)
 								fprintf(stdout, "cannot create the redirect file");
 							*cmmnd = NULL;
