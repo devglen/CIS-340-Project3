@@ -1,9 +1,3 @@
-/*
- * showsector.c
- *
- *  Created on: Apr 5, 2015
- *      Author: Glen
- */
 
 #include <fcntl.h>
 #include <string.h>
@@ -17,11 +11,18 @@
 int fd;
 
 int main(int argc, char **argv) {
+	unsigned short sec;
+	int arg_count;
+	for (argc--, argv++; argc > 0; argc -= arg_count, argv += arg_count) {
+		arg_count = 1;
+		sec = (unsigned short) atoi(*argv);
+	}
+	
 	unsigned short bytes_per_sector;
 	unsigned short num_of_sectors;
 
-	if ((fd = open("/Users/Glen/Downloads/imagefile.img", O_RDONLY)) < 0) {
-		printf("There was an error mounting floppy\n");
+	if ((fd = open("imagefile.img", O_RDONLY)) < 0) {
+		fprintf(stdout, "There was an error mounting floppy\n");
 		exit(1);
 	}
 
@@ -34,13 +35,13 @@ int main(int argc, char **argv) {
 
 	offset = lseek(fd, SEEK_SET, SEEK_SET);
 	if (offset == -1) {
-		printf("There was an issue reading beginning of floppy.");
+		fprintf(stdout, "There was an issue reading beginning of floppy.");
 		exit(1);
 	}
 
 	bytes_read = read(fd, buf, number_of_bytes);
 	if (bytes_read != number_of_bytes) {
-		printf("There was an issue reading the floppy.");
+		fprintf(stdout, "There was an issue reading the floppy.");
 		exit(1);
 	}
 
@@ -54,29 +55,27 @@ int main(int argc, char **argv) {
 
 	offset = lseek(fd, bytes_per_sector, 0);
 	if (offset != bytes_per_sector) {
-		printf("There was an issue setting the cursor");
+		fprintf(stdout, "There was an issue setting the cursor");
 		exit(1);
 	}
 
 	int i;
-	unsigned short sec;
 	unsigned char hex[bytes_per_sector];
-	sec = atoi(*argv);
-	printf("\nhex dump of sector : %d", sec);
+	fprintf(stdout, "\nhex dump of sector : %d", sec);
 
 	// set up horizontal entry hex values
-	printf("\n");
-	printf("\t 0 \t 1 \t 2 \t 3 \t 4 \t 5 \t 6 \t 7 \t 8 \t 9 \t A \t B \t C \t D \t E \t F");
+	fprintf(stdout, "\n");
+	fprintf(stdout, "\t 0 \t 1 \t 2 \t 3 \t 4 \t 5 \t 6 \t 7 \t 8 \t 9 \t A \t B \t C \t D \t E \t F");
 
 	lseek(fd,sec*bytes_per_sector,SEEK_SET);
 	for(i=0;i<bytes_per_sector;i++) {
 		read(fd,&hex[i],1);
 		if(i % 16 == 0){
-			printf("\n %x ",i);
+			fprintf(stdout, "\n %x ",i);
 		}
-		printf("\t %x ", hex[i]);
+		fprintf(stdout, "\t %x ", hex[i]);
 	}
-	printf("\n");
+	fprintf(stdout, "\n");
 	close(fd);
 	return 0;
 }
