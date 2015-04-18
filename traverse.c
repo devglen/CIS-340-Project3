@@ -189,7 +189,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	
-	if ((fd = open("/Users/Glen/Downloads/imagefile.img", O_RDONLY)) < 0) {
+	if ((fd = open("imagefile.img", O_RDONLY)) < 0) {
 		fprintf(stdout, "cannot find floppy disk");
 	}
 		
