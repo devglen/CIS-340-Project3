@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	unsigned short sectors_per_fat;
 	int dir_entries_per_sector = 16;
 
-	if ((fd = open("/Users/Glen/Downloads/imagefile.img", O_RDONLY)) < 0) {
+	if ((fd = open("imagefile.img", O_RDONLY)) < 0) {
 		fprintf(stdout, "There was an error mounting floppy\n");
 		exit(1);
 	}
