@@ -169,6 +169,14 @@ int main()
                                                 close(fd_rdr);
 					}
 					execve(cmd[0], cmd, NULL);
+					char* temp;
+					temp = path_name; 
+					token = strtok(path_name,":");
+					while(token != NULL){
+						path_name = temp;
+						execl(token,cmd[0],cmd[1],cmd[2],NULL);
+						token = strtok(NULL,":");
+					}
 					fprintf(stdout, "There was an invalid command in command string.\n");
 				}
 				if (redirect_bool)
