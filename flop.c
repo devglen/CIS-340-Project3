@@ -75,25 +75,6 @@ void change_dir(const char *path)
     chdir(path);
 }
 
-void trim(char *str)
-{
-    int i;
-    int begin = 0;
-    int end = strlen(str) - 1;
-
-    while (isspace(str[begin])) {
-        begin++;
-    }
-    while ((end >= begin) && isspace(str[end])) {
-        end--;
-    }
-    // Shift all characters back to the start of the string array.
-    for (i = begin; i <= end; i++) {
-        str[i - begin] = str[i];
-    }
-    str[i - begin] = '\0'; // Null terminate string.
-}
-
 int parse_cmd(char *cmd, char *arg[]) {
 	int a = 0, b = 0, c = 0;
 
