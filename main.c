@@ -24,7 +24,8 @@ int main()
 
         fprintf(stdout, "\nflop: ");
         fflush(stdout);
-        
+
+        // reset pipe and redirect values
         pipe_bool = 0;
         redirect_bool = 0;
 
@@ -44,8 +45,8 @@ int main()
 				fprintf(stdout, "Exiting the floppy disk shell... \n");
 				return EXIT_SUCCESS;
 			}
-                        
-                        pipe_bool = is_pipe(cmd);
+
+            pipe_bool = is_pipe(cmd);
 			redirect_bool = is_redirection(cmd);
 
 			if (strcmp("path", cmd[0]) == 0) {
@@ -85,9 +86,10 @@ int main()
 			}
 
 			if (pipe_bool > 0) {
-				// TODO: add logic for pipe
+                                // copy command string to not alter original 
 				cmmnd = cmd;
-				while (*cmmnd != NULL) {	/* break command into two: command and pipecmd */
+                                // iterate over command to find pipe portion
+				while (*cmmnd != NULL) {
 					if (!strcmp(*cmmnd, "|")) {
 						pipe_command = cmmnd + 1;
 						*cmmnd = NULL;
@@ -95,12 +97,13 @@ int main()
 					}
 					cmmnd++;
 				}
+                                // iterate over command string to find redirection portion
 				if (redirect_bool > 0) {
 					cmmnd = pipe_command;
 					while (*cmmnd != NULL) {
 						if (!strcmp(*cmmnd, ">")) {
 							if ((fd_rdr = open(*(cmmnd+1), (O_WRONLY | O_CREAT | O_TRUNC), 0644)) < 0)
-								fprintf(stdout, "cannot create the redirect file");
+								fprintf(stdout, "There was an error creating file for redirection\n");
 							*cmmnd = NULL;
 							break;
 						}
@@ -108,36 +111,51 @@ int main()
 					}
 				}
 				if (*pipe_command == NULL || pipe_command[0][0] == '\0') {
-					fprintf(stdout, "pipeline command error\n");
+					fprintf(stdout, "There was an error in the pipe command\n");
 					fflush(stdout);
 					continue;
 				}
 				if ((pipe(pipe_fd)) != 0)
-                                    fprintf(stdout, "cannot open a pipe");
+					fprintf(stdout, "There was an error creating the pipe\n");
 
 				if ((fork()) == 0) {
-					//close(0); dup(fd); close(fd); /* redirect to map 0 to floppy disk */
-					close(1); dup(pipe_fd[1]); close(pipe_fd[1]); close(pipe_fd[0]);
+					close(1);
+                                        dup(pipe_fd[1]);
+                                        close(pipe_fd[1]);
+                                        close(pipe_fd[0]);
+                                        // execute command 
 					execve(cmd[0], cmd, NULL);
-					fprintf(stdout, "shell command not found");
+					fprintf(stdout, "There was an invalid command in string\n");
 				}
-				if ((fork()) ==0) {
-					close(0); dup(pipe_fd[0]); close(pipe_fd[0]); close(pipe_fd[1]);
-					if (redirect_bool) {close(1); dup(fd_rdr); close(fd_rdr);}
+				if ((fork()) == 0) {
+					close(0);
+                                        dup(pipe_fd[0]);
+                                        close(pipe_fd[0]);
+                                        close(pipe_fd[1]);
+					if (redirect_bool) {
+                                            close(1);
+                                            dup(fd_rdr);
+                                            close(fd_rdr);
+                                        }
+                                        // execute pipe 
 					execvp(pipe_command[0], pipe_command);
-					fprintf(stdout, "pipeline command not found");
+					fprintf(stdout, "There was an error in pipe command\n");
 				}
-				close(pipe_fd[0]); close(pipe_fd[1]);
-				wait(NULL); wait(NULL);
+				close(pipe_fd[0]);
+                                close(pipe_fd[1]);
+				wait(NULL);
+                                wait(NULL);
 			}
 			else {
+                            // pipe was not found
 				if (redirect_bool > 0) {
-					// TODO: add logic for redirect
+                                        // copy command to not alter original string
 					cmmnd = cmd;
+                                        // find redirect file name and create file for writing.
 					while (*cmmnd != NULL) {
 						if (!strcmp(*cmmnd, ">")) {
 							if ((fd_rdr = open(*(cmmnd+1), (O_WRONLY | O_CREAT | O_TRUNC), 0644)) < 0)
-								fprintf(stdout, "cannot create the redirect file");
+								fprintf(stdout, "There was an issue creating redirect file\n");
 							*cmmnd = NULL;
 							break;
 						}
@@ -145,18 +163,20 @@ int main()
 					}
 				}
 				if ((fork()) == 0) {
-                                        if (redirect_bool) {
-                                            close(1); dup(fd_rdr); close(fd_rdr);
-                                        }
+					if (redirect_bool) {
+						close(1);
+                                                dup(fd_rdr);
+                                                close(fd_rdr);
+					}
 					execve(cmd[0], cmd, NULL);
-					fprintf(stdout, "shell command is invalid, plesae try again.\n");
+					fprintf(stdout, "There was an invalid command in command string.\n");
 				}
 				if (redirect_bool)
 					close(fd_rdr);
 				wait(NULL);
 			}
 		}
-                free(cmd);
+        free(cmd);
     }
 
     return 0;
