@@ -23,7 +23,7 @@ int main() {
 	unsigned short cluster;
 	char *fat_buffer;
 
-	if ((fd = open("/Users/Glen/Downloads/imagefile.img", O_RDONLY)) < 0) {
+	if ((fd = open("imagefile.img", O_RDONLY)) < 0) {
 		fprintf(stdout, "There was an error mounting floppy\n");
 		exit(1);
 	}
