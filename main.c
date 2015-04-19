@@ -9,9 +9,6 @@
 #include <sys/wait.h>
 #include "flop.h"
 
-extern char **environ;
-char **temp_environ;
-
 int main()
 {
 	int i, redirect_bool, pipe_bool, fd_rdr;
@@ -21,7 +18,6 @@ int main()
 	char buf[512];
 	int command_bytes;
 	int pipe_fd[2];
-        temp_environ = environ;
 
     while (1) {
         char arg[50], mod[50];
@@ -47,7 +43,8 @@ int main()
 		if (parse_cmd(buf, cmd)) {
 			if (strcmp("exit", cmd[0]) == 0) {
 				fprintf(stdout, "Exiting the floppy disk shell... \n");
-				return EXIT_SUCCESS;
+                                free(cmd);
+                                exit(1);
 			}
 
             pipe_bool = is_pipe(cmd);
@@ -130,22 +127,22 @@ int main()
                                         close(pipe_fd[0]);
                                         // execute command 
 					execve(cmd[0], cmd, NULL);
+					
                                         // above command was not found so try path_name environment
-                                        char* temp = path_name; 
-                                        char *token = strtok(temp,":");
-                                        while( token != NULL ) {
-                                            char envir_arg_pathname[50];
-                                            strcpy(envir_arg_pathname, "PATH=");
-                                            strcpy(envir_arg_pathname, token);
-                                            char *env_args[] = { envir_arg_pathname, NULL, NULL };
-                                            environ = env_args;
-                                            
-                                            if((execvp(cmd[0], &cmd[0])) == -1) {
-                                                token = strtok(NULL, ":");
-                                            }
-                                            else
-                                                break;
-                                        }
+					char* temp;
+					char* token;
+					temp = path_name; 
+					token = strtok(path_name,":");
+					while(token != NULL){
+						char *slash = "/";
+						path_name = temp;
+						//add command to end of each path to search
+						strcat(token,slash);
+						strcat(token,cmd[0]);
+						execl(token,cmd[0],cmd[1],cmd[2],NULL);
+						token = strtok(NULL,":");
+					}
+					
 					fprintf(stdout, "There was an invalid command in string\n");
 				}
 				if ((fork()) == 0) {
@@ -159,26 +156,24 @@ int main()
                                             close(fd_rdr);
                                         }
                                         
-                                        // reset environment
-                                        environ = temp_environ;
                                         // execute pipe 
 					execvp(pipe_command[0], pipe_command);
-                                        // above command was not found so try path_name environment
-                                        char* temp = path_name; 
-                                        char *token = strtok(temp,":");
-                                        while( token != NULL ) {
-                                            char envir_arg_pathname[50];
-                                            strcpy(envir_arg_pathname, "PATH=");
-                                            strcpy(envir_arg_pathname, token);
-                                            char *env_args[] = { envir_arg_pathname, NULL, NULL };
-                                            environ = env_args;
-                                            
-                                            if((execvp(cmd[0], &cmd[0])) == -1) {
-                                                token = strtok(NULL, ":");
-                                            }
-                                            else
-                                                break;
-                                        }
+                                        
+					// above command was not found so try path_name environment
+					char* temp;
+					char* token;
+					temp = path_name; 
+					token = strtok(path_name,":");
+					while(token != NULL){
+						char *slash = "/";
+						path_name = temp;
+						//add command to end of each path to search
+						strcat(token,slash);
+						strcat(token,cmd[0]);
+						execl(token,cmd[0],cmd[1],cmd[2],NULL);
+						token = strtok(NULL,":");
+					}
+					
 					fprintf(stdout, "There was an error in pipe command\n");
 				}
 				close(pipe_fd[0]);
@@ -209,8 +204,9 @@ int main()
                                                 close(fd_rdr);
 					}
 					execve(cmd[0], cmd, NULL);
+					
                                         // above command was not found so try path_name environment
-                                        char* temp;
+					char* temp;
 					char* token;
 					temp = path_name; 
 					token = strtok(path_name,":");
@@ -220,11 +216,10 @@ int main()
 						//add command to end of each path to search
 						strcat(token,slash);
 						strcat(token,cmd[0]);
-						printf("token : %s",token);
 						execl(token,cmd[0],cmd[1],cmd[2],NULL);
 						token = strtok(NULL,":");
 					}
-
+					
 					fprintf(stdout, "There was an invalid command in command string.\n");
 				}
 				if (redirect_bool)
